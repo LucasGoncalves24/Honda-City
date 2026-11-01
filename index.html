@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Controle de Manutenção · Honda City</title>
+<style>
+:root{--bg:#f4f5f7;--fg:#1b1f24;--card:#fff;--mut:#66707a;--bd:#dde1e6;--ok:#1a7f4b;--warn:#a05a00;--bad:#c62828;--acc:#c8102e;--okb:#e3f4ea;--wb:#fff1d6;--bb:#fde4e4;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14171a;--fg:#e9ecef;--card:#1e2328;--mut:#9aa4ad;--bd:#323a42;--ok:#5fd08f;--warn:#f0b04a;--bad:#ff7b7b;--acc:#ff5a6e;--okb:#12301f;--wb:#3a2b0d;--bb:#3d1717;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#14171a;--fg:#e9ecef;--card:#1e2328;--mut:#9aa4ad;--bd:#323a42;--ok:#5fd08f;--warn:#f0b04a;--bad:#ff7b7b;--acc:#ff5a6e;--okb:#12301f;--wb:#3a2b0d;--bb:#3d1717;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:860px;margin:0 auto;padding:14px}
+h1{font-size:20px;margin:4px 0 2px}h2{font-size:16px;margin:0 0 8px}
+.m{color:var(--mut);font-size:13px}
+nav{display:flex;gap:6px;overflow-x:auto;margin:12px 0}
+nav button{flex:none;background:var(--card);color:var(--fg);border:1px solid var(--bd);border-radius:20px;padding:7px 14px;font:inherit;cursor:pointer}
+nav button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px;margin:0 0 10px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+input,select,textarea{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:8px;min-width:0}
+input[type=number],input[type=date],select{width:100%}
+textarea{width:100%;min-height:90px}
+label{display:block;font-size:13px;color:var(--mut);margin:8px 0 3px}
+button{font:inherit;cursor:pointer}
+.p,button.s{background:var(--acc);color:#fff;border:0;border-radius:8px;padding:8px 14px}
+button.s{margin-top:8px;padding:6px 12px;background:transparent;color:var(--acc);border:1px solid var(--acc)}
+.sum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.sum div{border-radius:12px;padding:10px;text-align:center;font-size:13px}.sum b{display:block;font-size:24px}
+.sum .bad,.bd.bad{background:var(--bb);color:var(--bad)}.sum .warn,.bd.warn{background:var(--wb);color:var(--warn)}.sum .ok,.bd.ok,.bd.done{background:var(--okb);color:var(--ok)}
+.it{border-left:5px solid var(--bd)}.it.bad{border-left-color:var(--bad)}.it.warn{border-left-color:var(--warn)}.it.ok,.it.done{border-left-color:var(--ok)}
+.top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.bd{border-radius:12px;padding:2px 10px;font-size:12px;font-weight:600;white-space:nowrap}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ck{display:flex;gap:8px;align-items:flex-start;padding:5px 0;font-size:14px;color:var(--fg);margin:0}
+.ck input{margin-top:3px}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{border-bottom:1px solid var(--bd);padding:6px;text-align:left;vertical-align:top}
+@media(max-width:520px){.g{grid-template-columns:1fr}}
+@media print{nav,button,.np{display:none!important}body{background:#fff;color:#000}}
+.hd{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;padding-bottom:8px;border-bottom:2px solid var(--acc);margin-bottom:2px}
+.us{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.us button.s{margin:0}
+.pill{border-radius:12px;padding:2px 10px;font-size:12px;font-weight:600;background:var(--bb);color:var(--bad)}.pill.on{background:var(--okb);color:var(--ok)}
+.card{box-shadow:0 1px 3px rgba(0,0,0,.07)}.lg{max-width:400px;margin:8vh auto}
+</style></head>
+<body><main id="app"></main>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import * as A from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import * as D from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+const FA=initializeApp({apiKey:"AIzaSyAbLsiDBuvomdfFSbSEXaaqsYTBKHHM3Ds",authDomain:"tabela-de-manuten.firebaseapp.com",databaseURL:"https://tabela-de-manuten-default-rtdb.firebaseio.com",projectId:"tabela-de-manuten",storageBucket:"tabela-de-manuten.firebasestorage.app",messagingSenderId:"721421570524",appId:"1:721421570524:web:62a594918744a6a8ea3f19",measurementId:"G-4FCFB9366T"});
+const AU=A.getAuth(FA),DB=D.getDatabase(FA);
+import("https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js").then(m=>m.getAnalytics(FA)).catch(()=>{});
+const LB={bad:'Atrasado',warn:'Próximo',ok:'Em dia',done:'Concluído'},OR={bad:0,warn:1,ok:2,done:3};
+let S={nome:'Honda City',placa:'',tr:'AT',cond:'N',k0:0,d0:'',cur:0,curd:'',ak:1000,ad:30,kmm:0,log:[],visits:[]};
+const CFG=['nome','placa','tr','cond','k0','d0','cur','curd','ak','ad','kmm'];
+let U=null,UNS=null,ON=false,READY=false;
+const cfgOf=()=>Object.fromEntries(CFG.map(k=>[k,S[k]]));
+const P=p=>D.ref(DB,'users/'+U.uid+'/'+p);
+const fail=x=>alert('Erro ao salvar: '+(x.code||x.message));
+const push2=(p,v)=>D.push(P(p),v).catch(fail);
+const rm2=(p,id)=>D.remove(P(p+'/'+id)).catch(fail);
+const save=()=>{if(U&&READY)D.set(P('config'),cfgOf()).catch(fail)};
+const ERR={'auth/invalid-credential':'E-mail ou senha incorretos.','auth/invalid-email':'E-mail inválido.','auth/missing-password':'Informe a senha.','auth/weak-password':'Use ao menos 6 caracteres na senha.','auth/email-already-in-use':'Este e-mail já tem conta. Use Entrar.','auth/too-many-requests':'Muitas tentativas. Aguarde um pouco.','auth/operation-not-allowed':'Ative E-mail/senha em Authentication no console do Firebase.'};
+const L=(a,b,c)=>{const r=[];for(let i=a;i<=b;i+=c)r.push(i);return r};
+// Regras extraídas da Tabela de Manutenção Preventiva (págs. 11 e 12 do manual). list = marcos em milhares de km.
+const SV=[
+['oleo','Óleo do motor',s=>s.cond=='S'?{km:5000,mo:6}:{km:10000,mo:12}],
+['foleo','Filtro de óleo do motor',s=>({km:10000,mo:s.cond=='S'?6:12})],
+['far','Elemento do filtro de ar',()=>({km:30000})],
+['valv','Folga das válvulas (inspeção)',()=>({km:40000})],
+['fcomb','Filtro de combustível',()=>({km:10000})],
+['velas','Velas de ignição (irídio)',()=>({km:60000})],
+['corr','Correia dos acessórios: inspeção e tensão',()=>({list:L(40,200,40)})],
+['lenta','Rotação da marcha lenta (inspeção)',()=>({list:[80,160]})],
+['arref','Líquido de arrefecimento',()=>({first:{km:200000,mo:120},km:100000,mo:60})],
+['alin','Alinhamento das rodas (só se necessário)',()=>({list:[10,20,...L(40,200,20)]})],
+['bat','Capacidade de carga da bateria',()=>({first:{mo:12},mo:6})],
+['ftrans','Fluido da transmissão',s=>({list:s.cond=='S'?L(40,200,40):s.tr=='MT'?[80,160]:[80,140,200]})],
+['freios','Freios dianteiros e traseiros (inspeção)',()=>({km:10000,mo:6})],
+['ffreio','Fluido de freio',()=>({mo:36})],
+['fest','Freio de estacionamento (inspeção e ajuste)',()=>({list:[20,40,...L(80,200,40)]})],
+['polen','Filtro de pó e pólen',()=>({km:20000,mo:12})],
+['rod','Rodízio dos pneus',()=>({km:10000})],
+['vis1','Direção, suspensão e coifas (inspeção visual)',()=>({km:10000,mo:6})],
+['vis2','Mangueiras de freio, fluidos, escapamento e combustível (inspeção visual)',()=>({km:20000,mo:12})]
+];
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fk=n=>Number(n).toLocaleString('pt-BR'),fd=s=>s?new Date(s+'T12:00').toLocaleDateString('pt-BR'):'—',fdt=d=>d.toLocaleDateString('pt-BR');
+const td=()=>{const d=new Date();return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
+const add=(d,m)=>{const x=new Date(d+'T12:00');x.setMonth(x.getMonth()+Math.round(m));return x};
+const nm=id=>SV.find(s=>s[0]==id)?.[1]||id;
+const dm=n=>n>=60?'~'+Math.round(n/30.4)+' meses':n+' dias';
+const lg=(date,km)=>{if(km>0&&!S.log.some(x=>x.date==date&&x.km==km))push2('log',{date,km})};
+function rate(){const g=[...S.log,...S.visits.map(v=>({date:v.date,km:v.km}))];if(S.d0&&+S.k0>0)g.push({date:S.d0,km:+S.k0});g.sort((a,b)=>a.date.localeCompare(b.date));const h=g.slice(-6);if(h.length>1){const a=h[0],z=h[h.length-1],d=(new Date(z.date)-new Date(a.date))/864e5;if(d>=14&&z.km>a.km)return(z.km-a.km)/d}return(+S.kmm||0)/30.4}
+function ekm(){if(!S.curd)return+S.cur;const d=Math.max(0,Math.round((new Date(td()+'T12:00')-new Date(S.curd+'T12:00'))/864e5));return Math.round(+S.cur+rate()*d)}
+const rtx=d=>{const r=d[2](S),f=(q,p)=>[q.km?p+' '+fk(q.km)+' km':'',q.mo?p+' '+q.mo+' meses':''].filter(Boolean).join(' ou ');return r.list?'Marcos: '+r.list.join(' · ')+' mil km ('+r.list.map(x=>Math.round(x*.6)).join(' · ')+' meses)':(r.first?f(r.first,'aos')+'; depois ':'')+f(r,'a cada')};
+function last(id){let b=null;for(const v of S.visits)if(v.svc.includes(id)&&(!b||v.km>b.km||(v.km==b.km&&v.date>b.date)))b=v;return b}
+function calc(def){
+ const r=def[2](S),l=last(def[0]),b=l||{km:+S.k0,date:S.d0};let nk=null,nd=null;
+ if(r.list){const n=r.list.find(x=>x*1000>b.km);if(n!=null){nk=n*1000;if(b.date)nd=add(b.date,(nk-b.km)*0.0006)}}
+ else{const q=(!l&&r.first)||r;if(q.km)nk=b.km+q.km;if(q.mo&&b.date)nd=add(b.date,q.mo)}
+ const t=new Date();t.setHours(12,0,0,0);
+ const rk=nk==null?null:nk-ekm(),rd=nd?Math.round((nd-t)/864e5):null;
+ let st='ok';
+ if((rk!=null&&rk<0)||(rd!=null&&rd<0))st='bad';else if((rk!=null&&rk<=S.ak)||(rd!=null&&rd<=S.ad))st='warn';
+ if(nk==null&&nd==null)st='done';
+ return{def,l,nk,nd,rk,rd,st};
+}
+const nxt=x=>x.st=='done'?'Ciclo do manual concluído':[x.nk!=null?fk(x.nk)+' km':'',x.nd?fdt(x.nd):''].filter(Boolean).join(' ou ');
+const rem=x=>[x.rk!=null?(x.rk<0?fk(-x.rk)+' km em atraso':'faltam '+fk(x.rk)+' km'):'',x.rd!=null?(x.rd<0?dm(-x.rd)+' em atraso':'faltam '+dm(x.rd)):''].filter(Boolean).join(' · ');
+const lst=x=>x.l?fd(x.l.date)+' · '+fk(x.l.km)+' km · há '+dm(Math.round((Date.now()-new Date(x.l.date+'T12:00'))/864e5)):'Sem registro';
+let V='painel',pre=[],armed=null;
+const card=x=>`<div class="card it ${x.st}"><div class=top><b>${x.def[1]}</b><span class="bd ${x.st}">${LB[x.st]}</span></div><div class=m>Próxima: ${nxt(x)}${x.st=='done'?'':'<br>'+rem(x)}</div><div class=m>Última: ${lst(x)}</div><div class=m>Manual: ${rtx(x.def)}</div><button class=s data-a=reg data-id="${x.def[0]}">Registrar serviço</button></div>`;
+function painel(){
+ const c=SV.map(calc).sort((a,b)=>OR[a.st]-OR[b.st]||(a.rk??1e12)-(b.rk??1e12)),n=k=>c.filter(x=>x.st==k).length;
+ return`<div class=card><h2>Km hoje: ${fk(ekm())}${ekm()!=S.cur?' <span class=m>(estimado)</span>':''}</h2><div class=m>Última leitura: ${S.curd?fk(S.cur)+' km em '+fd(S.curd):'nenhuma'} · média: ${rate()?fk(Math.round(rate()*30.4))+' km/mês':'não calculada'}. Os alertas usam o km de hoje.</div><div class=row style="margin-top:8px"><input id=kmn type=number inputmode=numeric placeholder="Km do painel hoje" style="width:190px"><button class=p data-a=setkm>Atualizar</button></div></div>
+<div class=sum><div class=bad><b>${n('bad')}</b>Atrasados</div><div class=warn><b>${n('warn')}</b>Próximos</div><div class=ok><b>${n('ok')+n('done')}</b>Em dia</div></div>
+${!S.visits.length&&!S.cur?'<div class=card>Comece em <b>Ajustes</b>: informe o câmbio, o tipo de uso e o ponto de partida (km e data da venda ou do último serviço conhecido). Depois registre os serviços já feitos.</div>':''}
+${c.map(card).join('')}`}
+function reg(){
+ return`<div class=card><h2>Registrar serviço</h2><div class=g><div><label>Data</label><input id=rd type=date value="${td()}"></div><div><label>Quilometragem</label><input id=rk type=number inputmode=numeric value="${ekm()||''}"></div></div>
+<label>Serviços realizados</label>${SV.map(s=>`<label class=ck><input type=checkbox name=sv value="${s[0]}" ${pre.includes(s[0])?'checked':''}>${s[1]}</label>`).join('')}
+<label>Observações (oficina, peças, marca do óleo…)</label><input id=ro style="width:100%"><label>Valor (R$, opcional)</label><input id=rc type=number step=0.01 inputmode=decimal style="width:100%"><button class=p style="margin-top:12px" data-a=save>Salvar registro</button></div>`}
+function hist(){
+ const v=[...S.visits].sort((a,b)=>b.date.localeCompare(a.date)||b.km-a.km);
+ return`<div class=card><h2>Histórico</h2>${v.length?v.map(x=>`<div style="border-bottom:1px solid var(--bd);padding:8px 0"><b>${fd(x.date)} · ${fk(x.km)} km</b>${x.cost?` · R$ ${Number(x.cost).toLocaleString('pt-BR',{minimumFractionDigits:2})}`:''}<div class=m>${x.svc.map(nm).join('; ')}</div>${x.obs?`<div class=m>Obs.: ${esc(x.obs)}</div>`:''}<button class=s data-a=del data-id="${x.id}">${armed==x.id?'Confirmar exclusão':'Excluir'}</button></div>`).join(''):'<div class=m>Nenhum registro ainda.</div>'}</div>`}
+function rel(){
+ const c=SV.map(calc),tot=S.visits.reduce((a,v)=>a+(+v.cost||0),0);
+ return`<div class=card><h2>Relatório de manutenção</h2><div class=m>${esc(S.nome)} ${esc(S.placa)} · ${fk(ekm())} km · gerado em ${fdt(new Date())} · uso ${S.cond=='S'?'severo':'normal'} · câmbio ${S.tr=='MT'?'manual':'automático'}</div>
+<div class="row np" style="margin:10px 0"><button class=p data-a=copy>Copiar texto</button><button class=p data-a=print>Imprimir / PDF</button><button class=p data-a=csv>Baixar CSV</button></div>
+<div class=tw><table><tr><th>Serviço<th>Última<th>Próxima<th>Situação<th>Regra do manual</tr>${c.map(x=>`<tr><td>${x.def[1]}<td>${lst(x)}<td>${nxt(x)}<td>${LB[x.st]}<td>${rtx(x.def)}</tr>`).join('')}</table></div></div>
+<div class=card><h2>Serviços feitos</h2><div class=tw><table><tr><th>Data<th>km<th>Serviços<th>Valor</tr>${[...S.visits].sort((a,b)=>b.date.localeCompare(a.date)).map(v=>`<tr><td>${fd(v.date)}<td>${fk(v.km)}<td>${v.svc.map(nm).join('; ')}${v.obs?' ('+esc(v.obs)+')':''}<td>${v.cost?'R$ '+Number(v.cost).toFixed(2).replace('.',','):''}</tr>`).join('')}</table></div>${tot?`<p><b>Total gasto: R$ ${tot.toLocaleString('pt-BR',{minimumFractionDigits:2})}</b></p>`:''}</div>`}
+const sel=(k,o)=>`<select data-s=${k}>${o.map(([v,t])=>`<option value="${v}" ${S[k]==v?'selected':''}>${t}</option>`).join('')}</select>`;
+const inp=(k,t,x='')=>`<input data-s=${k} type=${t} value="${esc(S[k])}" ${x}>`;
+function aj(){
+ return`<div class=card><h2>Ajustes</h2><div class=g><div><label>Nome do veículo</label>${inp('nome','text')}</div><div><label>Placa</label>${inp('placa','text')}</div>
+<div><label>Câmbio</label>${sel('tr',[['AT','Automático'],['MT','Manual']])}</div><div><label>Tipo de uso (nota 1 do manual)</label>${sel('cond',[['N','Normal'],['S','Severo (táxi, app, trajetos curtos, poeira…)']])}</div>
+<div><label>km de partida (fixo; só vale para serviços sem registro)</label>${inp('k0','number','inputmode=numeric')}</div><div><label>Data em que o carro tinha esse km</label>${inp('d0','date')}</div>
+<div><label>Avisar “próximo” faltando (km)</label>${inp('ak','number','inputmode=numeric')}</div><div><label>Avisar “próximo” faltando (dias)</label>${inp('ad','number','inputmode=numeric')}</div><div><label>Uso médio (km/mês), se houver poucas leituras</label>${inp('kmm','number','inputmode=numeric')}</div></div></div>
+<div class=card><h2>Backup dos dados</h2><div class=m>Seus dados ficam salvos na nuvem e sincronizam entre aparelhos. O backup é um texto para guardar; restaurar substitui todos os dados da conta.</div><textarea id=bk></textarea><div class=row style="margin-top:8px"><button class=p data-a=bk>Gerar backup</button><button class=p data-a=rs>Restaurar do texto</button><span id=bkm class=m></span></div></div>`}
+const VS={painel,reg,hist,rel,aj},TB=[['painel','Painel'],['reg','Registrar'],['hist','Histórico'],['rel','Relatório'],['aj','Ajustes']];
+const app=document.getElementById('app');
+function renderApp(){
+ app.innerHTML=`<header class=hd><div><h1>🚗 ${esc(S.nome)}${S.placa?' · '+esc(S.placa):''}</h1><div class=m>${fk(ekm())} km · base: Tabela de Manutenção Preventiva do manual</div></div><div class="us np"><span id=pl class="pill ${ON?'on':''}">${ON?'Sincronizado':'Sem conexão'}</span><span class=m>${esc(U.email)}</span><button class=s data-a=out>Sair</button></div></header><nav>${TB.map(t=>`<button data-a=tab data-v=${t[0]} class="${V==t[0]?'on':''}">${t[1]}</button>`).join('')}</nav>${VS[V]()}`;
+}
+const am=t=>{const e=document.getElementById('am');if(e)e.textContent=t};
+function login(){app.innerHTML=`<div class="card lg"><h1>🚗 Controle de Manutenção</h1><div class=m>Entre para guardar e sincronizar seus dados em qualquer aparelho.</div><label>E-mail</label><input id=em type=email autocomplete=username style="width:100%"><label>Senha</label><input id=pw type=password autocomplete=current-password style="width:100%"><div class=row style="margin-top:12px"><button class=p data-a=in>Entrar</button><button class=s style="margin:0" data-a=up>Criar conta</button><button class=s style="margin:0" data-a=fg>Esqueci a senha</button></div><p class=m id=am></p></div>`}
+function render(){if(!U)login();else if(!READY)app.innerHTML='<div class="card m">Carregando seus dados…</div>';else renderApp()}
+async function auth(a){const e=document.getElementById('em').value.trim(),p=document.getElementById('pw').value;try{if(a=='fg'){if(!e)return am('Informe o e-mail.');await A.sendPasswordResetEmail(AU,e);am('Enviamos o link de redefinição por e-mail.')}else if(a=='up')await A.createUserWithEmailAndPassword(AU,e,p);else await A.signInWithEmailAndPassword(AU,e,p)}catch(x){am(ERR[x.code]||x.message)}}
+const msg=t=>{const e=document.getElementById('bkm');if(e)e.textContent=t};
+app.addEventListener('change',e=>{const k=e.target.dataset.s;if(!k)return;let v=e.target.value;if(e.target.type=='number')v=+v||0;S[k]=v;save()});
+app.addEventListener('click',e=>{
+ const b=e.target.closest('button');if(!b)return;const a=b.dataset.a;
+ if(a=='in'||a=='up'||a=='fg'){auth(a);return}
+ if(a=='out'){A.signOut(AU);return}
+ if(a=='csv'){const q=s=>'"'+String(s??'').replace(/"/g,'""')+'"',r=[['Data','km','Serviços','Observações','Valor'],...[...S.visits].sort((a,b)=>a.date.localeCompare(b.date)).map(v=>[v.date,v.km,v.svc.map(nm).join('; '),v.obs,v.cost])],u=URL.createObjectURL(new Blob(['\ufeff'+r.map(x=>x.map(q).join(';')).join('\n')],{type:'text/csv'})),l=document.createElement('a');l.href=u;l.download='manutencao.csv';l.click();return}
+ if(a=='tab'){V=b.dataset.v;if(V!='reg')pre=[];armed=null}
+ else if(a=='reg'){pre=[b.dataset.id];V='reg'}
+ else if(a=='setkm'){const i=document.getElementById('kmn').value,n=+i;if(i!==''&&n>=0){S.cur=n;S.curd=td();lg(td(),n);save()}}
+ else if(a=='save'){
+  const date=document.getElementById('rd').value,km=+document.getElementById('rk').value,svc=[...document.querySelectorAll('[name=sv]:checked')].map(x=>x.value);
+  if(!date||!(km>=0)||!document.getElementById('rk').value||!svc.length){alert('Informe data, quilometragem e ao menos um serviço.');return}
+  push2('visits',{date,km,svc,obs:document.getElementById('ro').value,cost:+document.getElementById('rc').value||0});
+  lg(date,km);if(km>S.cur){S.cur=km;S.curd=date}
+  save();pre=[];V='painel'}
+ else if(a=='del'){const id=b.dataset.id;if(armed==id){rm2('visits',id);armed=null}else armed=id}
+ else if(a=='print'){try{window.print()}catch(x){}return}
+ else if(a=='copy'){
+  const t=[S.nome+' '+S.placa+' - '+fk(ekm())+' km',...SV.map(calc).map(x=>[x.def[1],'última: '+lst(x),'próxima: '+nxt(x),LB[x.st]].join(' | '))].join('\n');
+  (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{b.textContent='Copiado!'}).catch(()=>{b.textContent='Copiar indisponível: use Imprimir'});return}
+ else if(a=='bk'){const t=document.getElementById('bk');t.value=JSON.stringify({...cfgOf(),visits:S.visits.map(({id,...v})=>v),log:S.log});t.select();msg('Copie o texto acima.');return}
+ else if(a=='rs'){try{const x=JSON.parse(document.getElementById('bk').value);if(!Array.isArray(x.visits))throw 0;const o={config:Object.fromEntries(CFG.map(k=>[k,x[k]??S[k]])),visits:{},log:{}};x.visits.forEach((v,i)=>{o.visits['r'+i]={date:v.date,km:+v.km,svc:v.svc||[],obs:v.obs||'',cost:+v.cost||0}});(x.log||[]).forEach((l,i)=>{o.log['r'+i]={date:l.date,km:+l.km}});D.set(D.ref(DB,'users/'+U.uid),o).then(()=>msg('Dados restaurados.')).catch(fail)}catch(r){msg('Texto de backup inválido.')}return}
+ render();
+});
+D.onValue(D.ref(DB,'.info/connected'),x=>{ON=!!x.val();const p=document.getElementById('pl');if(p){p.className='pill'+(ON?' on':'');p.textContent=ON?'Sincronizado':'Sem conexão'}});
+A.onAuthStateChanged(AU,u=>{U=u;READY=false;if(UNS){UNS();UNS=null}render();if(!u)return;
+ UNS=D.onValue(D.ref(DB,'users/'+u.uid),x=>{const d=x.val()||{},c=d.config||{};CFG.forEach(k=>{if(c[k]!==undefined)S[k]=c[k]});
+  S.visits=Object.entries(d.visits||{}).map(([id,v])=>({...v,id,svc:v.svc||[]}));S.log=Object.values(d.log||{});
+  const first=!READY;READY=true;if(!d.config)D.set(P('config'),cfgOf()).catch(fail);
+  const ae=document.activeElement;if(first||!(ae&&/INPUT|TEXTAREA|SELECT/.test(ae.tagName)))render()},
+  e=>{app.innerHTML='<div class="card">Sem permissão para ler os dados. Revise as regras do Realtime Database ('+esc(e.code||e.message)+').</div>'})});
+render();
+</script></body></html>
